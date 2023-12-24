@@ -10,7 +10,7 @@ app.use(express.json())
 
 
 
-const uri = "mongodb+srv://toDo:AtbIrSkEsIFTEDhY@cluster0.ej2tmfe.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_name}:${process.env.DB_password}@cluster0.ej2tmfe.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -25,6 +25,7 @@ async function run() {
 
   try {
     const userCollection=client.db('toDo').collection('users');
+    const todoListCollection=client.db('toDo').collection('toDo');
 
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -36,10 +37,20 @@ async function run() {
         res.send(result)
       })
       app.post('/users',async(req,res)=>{
-        const trainers=req.body;
-        const result=await userCollection.insertOne(trainers)
+        const users=req.body;
+        const result=await userCollection.insertOne(users)
         res.send(result);
       })
+    app.get('/toDoList',async(req,res)=>{
+        const result=await todoListCollection.find().toArray()
+        res.send(result)
+      })
+      app.post('/toDoList',async(req,res)=>{
+        const lists=req.body;
+        const result=await todoListCollection.insertOne(lists)
+        res.send(result);
+      })
+      
   } finally {
     // Ensures that the client will close when you finish/error
     //await client.close();
