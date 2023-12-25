@@ -69,6 +69,33 @@ async function run() {
         
         res.send(result);
       })
+         //delete a job
+    app.delete("/toDoList/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await todoListCollection.deleteOne(query);
+      res.send(result);
+    });
+    //update a job
+    app.put("/toDoList/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upset: true };
+      const updateTask = req.body;
+      const task = {
+        $set: {
+          email: updateTask.email,
+          jobTile: updateTask.jobTile,
+          des: updateTask.des,
+          date: updateTask.date,
+          priority: updateTask.priority,
+         
+        },
+      };
+      const result = await jobsCollection.updateOne(filter, task, options);
+      res.send(result);
+    });
+
       
   } finally {
     // Ensures that the client will close when you finish/error
