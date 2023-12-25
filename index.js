@@ -38,8 +38,14 @@ async function run() {
       })
       app.post('/users',async(req,res)=>{
         const users=req.body;
+        const query={email:users.email};
+        const existingUser=await userCollection.findOne(query);
+         if(existingUser){
+        return res.send({message:'User already added',insertedId:null})
+      }
         const result=await userCollection.insertOne(users)
         res.send(result);
+      
       })
     app.get('/toDoList',async(req,res)=>{
         const result=await todoListCollection.find().toArray()
@@ -85,14 +91,15 @@ async function run() {
       const task = {
         $set: {
           email: updateTask.email,
-          jobTile: updateTask.jobTile,
+          name:updateTask.name,
           des: updateTask.des,
           date: updateTask.date,
           priority: updateTask.priority,
+          todo:'todo'
          
         },
       };
-      const result = await jobsCollection.updateOne(filter, task, options);
+      const result = await todoListCollection.updateOne(filter, task, options);
       res.send(result);
     });
 
