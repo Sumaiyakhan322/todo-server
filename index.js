@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app=express()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port =process.env.PORT  || 5000
 //middle ware
@@ -48,6 +48,25 @@ async function run() {
       app.post('/toDoList',async(req,res)=>{
         const lists=req.body;
         const result=await todoListCollection.insertOne(lists)
+        res.send(result);
+      })
+      app.get('/toDoList/:id',async(req,res)=>{
+        const id=req.params.id
+        const query={_id:new ObjectId(id)}
+        const result=await todoListCollection.findOne(query)
+        res.send(result)
+      })
+      app.patch('/toDoList/:id',async(req,res)=>{
+        const id=req.params.id;
+        const filter={_id:new ObjectId(id)};
+        const body=req.body
+        const updatedDoc={
+          $set:{
+            todo:body.todo
+          }
+        }
+        const result=await todoListCollection.updateOne(filter,updatedDoc)
+        
         res.send(result);
       })
       
